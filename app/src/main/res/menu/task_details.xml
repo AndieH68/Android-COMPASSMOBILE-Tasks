@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/bluetooth"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_bluetooth_searching_white_48dp"
+        android:title="@string/clear_filters"
+        android:visible="false"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/doneButton"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_done_white_48dp"
+        android:title="@string/clear_filters"
+        app:showAsAction="always" />
+
+
+
+</menu>
