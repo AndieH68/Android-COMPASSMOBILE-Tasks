@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/CompassMobile.iml" filepath="$PROJECT_DIR$/CompassMobile.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Android-COMPASSMOBILE-Tasks.iml" filepath="$PROJECT_DIR$/Android-COMPASSMOBILE-Tasks.iml" />
+      <module fileurl="file://$PROJECT_DIR$/COMPASSMOBILE Tasks/COMPASSMOBILE Tasks.iml" filepath="$PROJECT_DIR$/COMPASSMOBILE Tasks/COMPASSMOBILE Tasks.iml" />
     </modules>
   </component>
 </project>
