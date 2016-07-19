@@ -32,7 +32,7 @@ public class BaseWebRequests {
     public final static int TASK_TEMPLATE_PARAMETER = 11;
     public final static int TASK = 12;
     public final static int TASK_PARAMETER = 13;
-    public final static  String TAG = "webRequests";
+    public final static String TAG = "webRequests";
     public final static String MALFORMED_RESPONSE = "MALFORMED RESPONSE";
     public final static String SERVER_ERROR_RESPONSE = "SERVER ERROR RESPONSE";
 
@@ -43,7 +43,7 @@ public class BaseWebRequests {
         this.operationCallback = operationCallback;
     }
 
-    public final static String defaultDate = "1990-01-01 12:00:00.000";
+    public final static String defaultDate = "2000-01-02 00:00:00.000";
 
     public static String operativeId = null;
     private static String organisationId;

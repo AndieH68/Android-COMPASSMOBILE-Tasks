@@ -117,8 +117,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String servername = serverName.getText().toString();
         WebAPI.endPoint = "http://"+servername+WebAPI.halfEndPoint;
 
-        SharedPrefs.setServerName(servername,this);
+        if (SharedPrefs.getServerName(this) != null && !SharedPrefs.getServerName(this).equals(servername)) {
+            //reset the synchronisation dates
+            Synchronisation.deleteAll(realm);
+        }
+        SharedPrefs.setServerName(servername, this);
         SharedPrefs.setUserName(userName,this);
+
 
         loginRequest = new LoginRequest();
         loginRequest.addOperationCallback(new OperationCallback() {
