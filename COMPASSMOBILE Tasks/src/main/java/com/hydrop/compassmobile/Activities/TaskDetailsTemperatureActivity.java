@@ -108,6 +108,7 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
                 case 0xF4:
                     doUnbindService();
                     break;
+
                 case bluetherm_ConnectedToProbe:
                     printb("bluetherm_ConnectedToProbe");
                     this.sendEmptyMessage(UPDATE_UI);
@@ -115,12 +116,15 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
                     isConnected = true;
                     Utils.isProbeConnected = true;
                     break;
+
                 case bluetherm_ConnectFailed:
                     this.sendEmptyMessage(UPDATE_UI);
                     showMessage(getString(R.string.bluetooth_connection_issue));
                     changeBluetoothIcon(R.drawable.ic_bluetooth_disabled_white_48dp);
-
+                    isConnected = false;
+                    Utils.isProbeConnected = false;
                     break;
+
                 case bluetherm_disconnected:
                     printb("bluetherm_disconnected");
                     connectButtonDelay = 5000;
@@ -140,10 +144,14 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
                     }
 
                     break;
+
                 case bluetherm_ProbeShuttingDown:
                     currentlyConnectedDevice = null;
                     this.sendEmptyMessage(UPDATE_UI);
+                    isConnected = false;
+                    Utils.isProbeConnected = false;
                     break;
+
                 case bluetherm_NewReading:
                     if (isConnected) {
                         errorConnecting = false;
@@ -161,7 +169,6 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
                     break;
 
                 case bluetherm_EmissivityValue:
-
                     Bundle b = msg.getData();
                     try {
                         b.setClassLoader(bluethermReport.class.getClassLoader());
@@ -174,14 +181,18 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
                     printb("EmisValue "+emissivityValue);
 
                     break;
+
                 case bluetherm_ErrorConnecting:
                     changeBluetoothIcon(R.drawable.ic_bluetooth_disabled_white_48dp);
                     if (Utils.checkNotNull(currentlyConnectedDevice)){
                         showMessage(getString(R.string.error_connecting_to_device)+" "+currentlyConnectedDevice.getName());
                     }
                     printb("bluetherm_ErrorConnecting");
+                    isConnected = false;
+                    Utils.isProbeConnected = false;
                     imh.sendEmptyMessage(bluetherm_ConnectFailed);
                     break;
+
                 case bluetherm_ProbeButtonPressed:
                     printb("Button pressed");
                     ((TaskDetailsTemperatureAdapter) mAdapter).resetFocus();
@@ -367,6 +378,8 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
                 if (preselectedDevice.equals(deviceName)){
                     currentlyConnectedDevice = device;
                     changeBluetoothIcon(R.drawable.ic_bluetooth_searching_white_48dp);
+                    isConnected = false;
+                    Utils.isProbeConnected = false;
                     showMessage(getString(R.string.searching_for_device)+" "+deviceName);
                     break;
                 }
@@ -374,6 +387,8 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
         }
         if (!Utils.checkNotNull(currentlyConnectedDevice)){
             changeBluetoothIcon(R.drawable.ic_bluetooth_disabled_white_48dp);
+            isConnected = false;
+            Utils.isProbeConnected = false;
             showMessage(getString(R.string.please_select_your_device_from_app_settings));
             return;
         }
@@ -392,7 +407,8 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
         else {
             showMessage(getString(R.string.no_bonded_devices));
             changeBluetoothIcon(R.drawable.ic_bluetooth_disabled_white_48dp);
-
+            isConnected = false;
+            Utils.isProbeConnected = false;
         }
     }
 
@@ -414,19 +430,15 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
             TaskTemplateParameter taskTemplateParameter = taskDetailsItem.getTaskTemplateParameter();
             if (taskTemplateParameter.getParameterName().startsWith("Temperature") && !taskTemplateParameter.getParameterName().endsWith("Set")) {
                 ((TaskDetailsTemperatureAdapter) mAdapter).update(value);
-
             }
         }
     }
 
-
-
     private void showMessage(String message){
         Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
     }
+
     private void printb(String message){
         Log.d("mlue800th",message);
     }
-
-
 }
