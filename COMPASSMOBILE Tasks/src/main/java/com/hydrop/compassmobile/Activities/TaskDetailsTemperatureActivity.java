@@ -23,6 +23,8 @@ import com.hydrop.compassmobile.Activities.Adapters.TaskDetailsTemperatureAdapte
 import com.hydrop.compassmobile.Activities.HelperClasses.TaskDetailsItem;
 import com.hydrop.compassmobile.R;
 import com.hydrop.compassmobile.RealmObjects.TaskTemplateParameter;
+
+import uk.co.etiltd.bluetooth.service.bluetherm;
 import uk.co.etiltd.bluetooth.service.bluethermReport;
 import com.hydrop.compassmobile.RealmObjects.Asset;
 import com.hydrop.compassmobile.Utils;
@@ -111,6 +113,7 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
                     this.sendEmptyMessage(UPDATE_UI);
                     changeBluetoothIcon(R.drawable.ic_bluetooth_connected_white_48dp);
                     isConnected = true;
+                    Utils.isProbeConnected = true;
                     break;
                 case bluetherm_ConnectFailed:
                     this.sendEmptyMessage(UPDATE_UI);
@@ -122,6 +125,7 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
                     printb("bluetherm_disconnected");
                     connectButtonDelay = 5000;
                     isConnected = false;
+                    Utils.isProbeConnected = false;
                     this.sendEmptyMessage(UPDATE_UI);
                     changeBluetoothIcon(R.drawable.ic_bluetooth_disabled_white_48dp);
 
@@ -319,13 +323,19 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
     public void doBindService() {
         imh = new IncomingMessageHandler();
         mMessenger = new Messenger(imh);
-        Intent i = new Intent();
-        i.setClassName("uk.co.etiltd.bluetooth.service","uk.co.etiltd.bluetooth.service.bluetherm");
-        startService(i);
+
+//        Intent i = new Intent();
+//        i.setClassName("uk.co.etiltd.bluetooth.service","uk.co.etiltd.bluetooth.service.bluetherm");
+//        startService(i);
+
+        startService(new Intent(this, bluetherm.class));
         try {
             printb("try bind");
             Context c = getApplicationContext();
-            c.bindService(i, mConnection, Context.BIND_AUTO_CREATE);
+
+//            c.bindService(i, mConnection, Context.BIND_AUTO_CREATE);
+            c.bindService(new Intent(this, bluetherm.class), mConnection, Context.BIND_AUTO_CREATE);
+
         }catch(Exception e){
             printb("try bind failed "+e.getMessage());
         }
@@ -390,7 +400,6 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
         try {
             if (mService != null) {
                 mService.send(Message.obtain(null, bluetherm_disconnect, null));
-
             }
         }
         catch (RemoteException e) {
@@ -405,6 +414,7 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
             TaskTemplateParameter taskTemplateParameter = taskDetailsItem.getTaskTemplateParameter();
             if (taskTemplateParameter.getParameterName().startsWith("Temperature") && !taskTemplateParameter.getParameterName().endsWith("Set")) {
                 ((TaskDetailsTemperatureAdapter) mAdapter).update(value);
+
             }
         }
     }

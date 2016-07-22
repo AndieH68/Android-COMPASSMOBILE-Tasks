@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Android-COMPASSMOBILE-Tasks.iml" filepath="$PROJECT_DIR$/Android-COMPASSMOBILE-Tasks.iml" />
       <module fileurl="file://$PROJECT_DIR$/COMPASSMOBILE Tasks/COMPASSMOBILE Tasks.iml" filepath="$PROJECT_DIR$/COMPASSMOBILE Tasks/COMPASSMOBILE Tasks.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bluetoothservice-debug/bluetoothservice-debug.iml" filepath="$PROJECT_DIR$/bluetoothservice-debug/bluetoothservice-debug.iml" />
     </modules>
   </component>
 </project>

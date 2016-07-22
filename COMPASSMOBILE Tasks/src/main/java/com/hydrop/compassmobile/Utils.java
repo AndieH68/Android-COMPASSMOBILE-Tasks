@@ -11,6 +11,7 @@ import java.util.TimeZone;
  */
 public class Utils {
     public static boolean isDebugEnabled = false;
+    public static Boolean isProbeConnected = false;
 
     public  static <T> boolean checkNotNull(T object) {
         return object != null;

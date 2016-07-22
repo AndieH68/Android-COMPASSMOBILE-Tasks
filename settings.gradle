@@ -1,1 +1,1 @@
-include ':COMPASSMOBILE Tasks'
+include ':COMPASSMOBILE Tasks', ':bluetoothservice-debug'

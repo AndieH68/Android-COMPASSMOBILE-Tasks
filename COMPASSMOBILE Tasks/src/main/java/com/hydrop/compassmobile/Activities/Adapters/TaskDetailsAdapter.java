@@ -267,9 +267,6 @@ public class TaskDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         int imageButtonVisibility =  item.getTaskTemplateParameter().getOrdinal() == 1 ? View.VISIBLE : View.GONE;
         freeTextVH.imageButton.setVisibility(imageButtonVisibility);
 
-
-
-
         freeTextVH.freeText.setEnabled(item.isVisible());
 
         String title = taskTemplateParameter.getParameterDisplay();
@@ -277,6 +274,9 @@ public class TaskDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             title = item.getTaskTemplateParameter().getOrdinal()+"."+taskTemplateParameter.getParameterDisplay()+" -"+item.isVisible();
         }
         freeTextVH.title.setText(title);
+        if(taskTemplateParameter.getParameterName().startsWith("Temperature") && !taskTemplateParameter.getParameterName().endsWith("Set") && Utils.isProbeConnected){
+            freeTextVH.freeText.setInputType(InputType.TYPE_NULL);
+        } else
         if (taskTemplateParameter.getParameterType().equals("Number")){
             freeTextVH.freeText.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_CLASS_NUMBER);
         }else{
