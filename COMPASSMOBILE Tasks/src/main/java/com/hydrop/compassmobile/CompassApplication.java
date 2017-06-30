@@ -2,7 +2,7 @@ package com.hydrop.compassmobile;
 
 import android.app.Application;
 
-import com.crittercism.app.Crittercism;
+//import com.crittercism.app.Crittercism;
 import com.hydrop.compassmobile.WebAPI.Requests.BaseWebRequests;
 
 import io.realm.Realm;
@@ -16,7 +16,7 @@ public class CompassApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Crittercism.initialize(getApplicationContext(),"d488ce1a6d7b4d26aff4a36d9b9942ae00555300");
+        //Crittercism.initialize(getApplicationContext(),"d488ce1a6d7b4d26aff4a36d9b9942ae00555300");
         RealmConfiguration config = new RealmConfiguration.Builder(this).build();
         Realm.setDefaultConfiguration(config);
 

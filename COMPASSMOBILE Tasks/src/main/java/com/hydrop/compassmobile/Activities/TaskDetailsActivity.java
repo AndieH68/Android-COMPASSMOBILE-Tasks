@@ -41,6 +41,20 @@ public class TaskDetailsActivity extends AppCompatActivity {
     protected TaskDetailsAdapter mAdapter;
     protected RealmResults<TaskTemplateParameter> results;
     protected ArrayList<TaskDetailsItem> modifiedResultList = new ArrayList<>();
+    private int clickedPosition;
+    protected TaskDetailsAdapter.TaskDetailsAdapterOnClick taskDetailsAdapterOnClick = new TaskDetailsAdapter.TaskDetailsAdapterOnClick() {
+        @Override
+        public void searchButtonPressedForItemInPosition(int position) {
+            clickedPosition = position;
+            Intent intent = new Intent(TaskDetailsActivity.this, ScanActivity.class);
+            startActivityForResult(intent, TaskActivity.SEARCH_BARCODE);
+
+        }
+    };
+
+    public static void print(String message) {
+        Log.d("checkingFs", message);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +78,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
         }
 
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -91,7 +106,6 @@ public class TaskDetailsActivity extends AppCompatActivity {
         return true;
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -108,17 +122,6 @@ public class TaskDetailsActivity extends AppCompatActivity {
 
         }
     }
-
-    private int clickedPosition;
-    protected TaskDetailsAdapter.TaskDetailsAdapterOnClick taskDetailsAdapterOnClick = new TaskDetailsAdapter.TaskDetailsAdapterOnClick() {
-        @Override
-        public void searchButtonPressedForItemInPosition(int position) {
-            clickedPosition = position;
-            Intent intent = new Intent(TaskDetailsActivity.this,ScanActivity.class);
-            startActivityForResult(intent,TaskActivity.SEARCH_BARCODE);
-
-        }
-    };
 
     private void validateExit(){
         DialogInterface.OnClickListener positiveAction = new DialogInterface.OnClickListener() {
@@ -156,6 +159,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
             Toast.makeText(this,getString(R.string.complete_required_fields),Toast.LENGTH_SHORT).show();
         }
     }
+
     private void uploadTask(String taskId){
         SendTaskRequest sendTaskRequest = new SendTaskRequest();
         sendTaskRequest.sendTask(taskId);
@@ -208,9 +212,13 @@ public class TaskDetailsActivity extends AppCompatActivity {
             taskParameter.setParameterDisplay(taskTemplateParameter.getParameterDisplay());
             taskParameter.setCollect(true);
             String selectedValue = item.getSelectedValue();
-            if (!Utils.checkNotNull(selectedValue) ||selectedValue.equals("") || selectedValue.equals(getString(R.string.not_applicable))
-                    || selectedValue.equals(getString(R.string.please_select))) {
-                selectedValue = getString(R.string.not_applicable);
+            String parameterName = taskParameter.getParameterName();
+            if (!(parameterName.equals("Remove Asset") || parameterName.equals("Alternate Asset Code")
+                    || (parameterName.contains("Notes") && parameterName.startsWith("Add")))) {
+                if (!Utils.checkNotNull(selectedValue) || selectedValue.equals("") || selectedValue.equals(getString(R.string.not_applicable))
+                        || selectedValue.equals(getString(R.string.please_select))) {
+                    selectedValue = getString(R.string.not_applicable);
+                }
             }
             taskParameter.setParameterValue(selectedValue);
 
@@ -258,10 +266,6 @@ public class TaskDetailsActivity extends AppCompatActivity {
         mAdapter = new TaskDetailsAdapter(modifiedResultList, realm, this);
         mAdapter.setTaskDetailsAdapterOnClick(taskDetailsAdapterOnClick);
         recyclerView.setAdapter(mAdapter);
-    }
-
-    public static void print(String message){
-        Log.d("checkingFs",message);
     }
 
     protected void createList(){

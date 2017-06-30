@@ -153,6 +153,14 @@ public class FilterHelper {
         }
         if(myTasks){
             query.equalTo("operativeId",BaseWebRequests.operativeId);
+        } else {
+            query.beginGroup();
+            query.equalTo("operativeId", BaseWebRequests.operativeId);
+            query.or();
+            query.equalTo("operativeId", "00000000-0000-0000-0000-000000000000");
+            query.or();
+            query.isNull("operativeId");
+            query.endGroup();
         }
         BaseWebRequests.webPrint("index "+selectedDateRangeSpinnerIndex);
         if (selectedDateRangeSpinnerIndex == 3) {//Due By the End of Next Month

@@ -17,6 +17,12 @@ public class TaskDetailsTemperatureAdapter extends TaskDetailsAdapter {
     private String hotValue, coldValue;
     private int focusedIndex;
 
+    public TaskDetailsTemperatureAdapter(ArrayList<TaskDetailsItem> taskTemplateParameterArrayList, Realm realm, Context context, String hotValue, String coldValue) {
+        super(taskTemplateParameterArrayList, realm, context);
+        this.hotValue = hotValue;
+        this.coldValue = coldValue;
+    }
+
     public void resetFocus(){
         focusedIndex = -1;
     }
@@ -25,22 +31,15 @@ public class TaskDetailsTemperatureAdapter extends TaskDetailsAdapter {
         for (int i=0;i<getItemCount();i++){
             TaskDetailsItem item = getItem(i);
             TaskTemplateParameter taskTemplateParameter = item.getTaskTemplateParameter();
-            if (taskTemplateParameter.getParameterName().startsWith("Temperature") && !taskTemplateParameter.getParameterName().endsWith("Set")){
-                if (i == focusedIndex){
+            if (taskTemplateParameter.getParameterName().startsWith("Temperature") && !taskTemplateParameter.getParameterName().endsWith("Set"))
+                if (i == focusedIndex) {
                     item.setSelectedValue(value);
                     notifyItemChanged(i);
 
                     return;
                 }
-            }
-            
-        }
-    }
 
-    public TaskDetailsTemperatureAdapter(ArrayList<TaskDetailsItem> taskTemplateParameterArrayList, Realm realm, Context context, String hotValue, String coldValue) {
-        super(taskTemplateParameterArrayList, realm, context);
-        this.hotValue = hotValue;
-        this.coldValue = coldValue;
+        }
     }
 
     @Override

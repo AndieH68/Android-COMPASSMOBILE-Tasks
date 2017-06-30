@@ -3,7 +3,7 @@ apply plugin: 'realm-android'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId "com.hydrop.compassmobile"
         minSdkVersion 17
@@ -33,6 +33,6 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     compile 'me.dm7.barcodescanner:zxing:1.8.4'
-    compile 'com.crittercism:crittercism-android-agent:+'
+    //compile 'com.crittercism:crittercism-android-agent:+'
     compile project(':bluetoothservice-debug')
 }

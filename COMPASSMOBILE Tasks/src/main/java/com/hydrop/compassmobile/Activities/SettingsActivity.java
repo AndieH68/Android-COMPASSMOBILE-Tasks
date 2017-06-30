@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,7 +29,6 @@ import com.hydrop.compassmobile.WebAPI.BaseMultipleRequestsHandler;
 import com.hydrop.compassmobile.WebAPI.Requests.BaseWebRequests;
 import com.hydrop.compassmobile.WebAPI.Requests.OperationCallback;
 import com.hydrop.compassmobile.WebAPI.Requests.SendTaskRequest;
-import com.hydrop.compassmobile.WebAPI.WebAPI;
 
 import java.util.Set;
 
@@ -38,13 +38,15 @@ import io.realm.RealmResults;
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
 
+    public static String selectedBluetoothDeviceName;
     private TextView pairingTextView,uploadTaskValueTextView,synchoniseDataTextView,resetSynchronisationDatesTextView,
-    resetTaskDataTextView,resetAllDataTextView,viewViewHelp;
+            resetTaskDataTextView, resetAllDataTextView, viewViewHelp, versonValueView;
+    private Switch recordTaskTimesSwitch, recordTemperatureProfilesSwitch;
     private RelativeLayout uploadTaskLayout;
     private Realm realm;
     private ProgressDialog progressDialog;
-    public static String selectedBluetoothDeviceName;
-
+    private int connectionTries = 0;
+    private int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +56,13 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         realm = Realm.getDefaultInstance();
         setUI();
+
+        //set the version number
+        versonValueView.setText(Utils.VersionNumber(this));
+
         checkTasksForUpload();
+        recordTaskTimesSwitch.setChecked(SharedPrefs.getUseTaskTiming(this));
+        recordTemperatureProfilesSwitch.setChecked(SharedPrefs.getUseTmperatureProfile(this));
 
     }
 
@@ -72,8 +80,13 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         resetTaskDataTextView.setOnClickListener(this);
         resetAllDataTextView = (TextView)findViewById(R.id.resetAllData);
         resetAllDataTextView.setOnClickListener(this);
+        recordTaskTimesSwitch = (Switch) findViewById(R.id.recordTimesSwitch);
+        recordTaskTimesSwitch.setOnClickListener(this);
+        recordTemperatureProfilesSwitch = (Switch) findViewById(R.id.recordProfileSwitch);
+        recordTemperatureProfilesSwitch.setOnClickListener(this);
         viewViewHelp = (TextView)findViewById(R.id.viewCompassMobileHelp);
         viewViewHelp.setOnClickListener(this);
+        versonValueView = (TextView) findViewById(R.id.versionValue);
     }
 
     private void checkTasksForUpload(){
@@ -93,11 +106,13 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         }
         uploadTaskValueTextView.setText(""+count);
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         realm.close();
     }
+
     private void dismissDialog() {
         if (Utils.checkNotNull(progressDialog)) {
             progressDialog.dismiss();
@@ -145,6 +160,10 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             selectedBluetoothDevice();
         }else if (v == uploadTaskLayout){
             uploadCompletedTasks();
+        } else if (v == recordTaskTimesSwitch) {
+            SharedPrefs.setUseTaskTiming(recordTaskTimesSwitch.isChecked(), this);
+        } else if (v == recordTemperatureProfilesSwitch) {
+            SharedPrefs.setUseTmperatureProfile(recordTemperatureProfilesSwitch.isChecked(), this);
         }else if (v == viewViewHelp){
             showHelp();
         }
@@ -170,7 +189,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void showHelp(){
-        String URL = "http://" + SharedPrefs.getServerName(this) + "/HelpDocuments/COMPASSMOBILE/COMPASSMOBILE-Tasks-User-Guide-for-Android.pdf";
+        String protocol = Utils.isDebugEnabled ? Utils.httpProtocol : Utils.httpsProtocol;
+        String URL = protocol + SharedPrefs.getServerName(this) + "/HelpDocuments/COMPASSMOBILE/COMPASSMOBILE-Tasks-User-Guide-for-Android.pdf";
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(URL));
         startActivity(browserIntent);
     }
@@ -225,7 +245,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-
     private void resetTaskData(){
         DialogInterface.OnClickListener positive = new DialogInterface.OnClickListener() {
             @Override
@@ -255,7 +274,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         alertDialog.show();
     }
 
-    private int connectionTries = 0;
     private void selectedBluetoothDevice(){
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (!Utils.checkNotNull(mBluetoothAdapter)){
@@ -346,7 +364,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-    private int count = 0;
     protected void incrementCounter(int numberOfRequests) {
         synchronized (SettingsActivity.class) {
             count++;

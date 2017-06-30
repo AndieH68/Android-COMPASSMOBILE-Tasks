@@ -67,164 +67,25 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
     static final int bluetherm_EmissivityValue = 64; //sending value back to Main Activity
 
     static final int UPDATE_UI = 100;
+    // whether or not we are connected
+    public boolean isConnected;
+    // which device we are connected to
+    public BluetoothDevice currentlyConnectedDevice;
+    public bluethermReport lastReading;
     // whether or not we are bound to the service
     protected boolean mBound;
     // for sending messages to the service
     protected Messenger mService;
     // for receiving messages from the service
     protected Messenger mMessenger;
-    // whether or not we are connected
-    public boolean isConnected;
-    // which device we are connected to
-    public BluetoothDevice currentlyConnectedDevice;
-    public bluethermReport lastReading;
-
+    protected MenuItem bluetoothItem;
     int connectButtonDelay;
-
     int connectFailCount = 1;
     boolean errorConnecting = false ;
     boolean errorReconnectingOnce = true;
+    private IncomingMessageHandler probeMessageHandler;
 
-    class IncomingMessageHandler extends Handler {
-        public void UpdateHandler(Handler value) {
-            formHandler = value;
-
-        }
-
-        private Handler formHandler;
-
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 0xF0:
-                    connect();
-                    break;
-                case 0xF1:
-                    disConnect();
-                    break;
-                case 0xF3:
-                    doBindService();
-                    break;
-                case 0xF4:
-                    doUnbindService();
-                    break;
-
-                case bluetherm_ConnectedToProbe:
-                    printb("bluetherm_ConnectedToProbe");
-                    this.sendEmptyMessage(UPDATE_UI);
-                    changeBluetoothIcon(R.drawable.ic_bluetooth_connected_white_48dp);
-                    isConnected = true;
-                    Utils.isProbeConnected = true;
-                    break;
-
-                case bluetherm_ConnectFailed:
-                    this.sendEmptyMessage(UPDATE_UI);
-                    showMessage(getString(R.string.bluetooth_connection_issue));
-                    changeBluetoothIcon(R.drawable.ic_bluetooth_disabled_white_48dp);
-                    isConnected = false;
-                    Utils.isProbeConnected = false;
-                    break;
-
-                case bluetherm_disconnected:
-                    printb("bluetherm_disconnected");
-                    connectButtonDelay = 5000;
-                    isConnected = false;
-                    Utils.isProbeConnected = false;
-                    this.sendEmptyMessage(UPDATE_UI);
-                    changeBluetoothIcon(R.drawable.ic_bluetooth_disabled_white_48dp);
-
-                    lastReading = bluethermReport.getEmptyReading();
-
-                    if (null != formHandler) {
-                        formHandler.sendEmptyMessage(0xF000);
-                    }
-                    if (currentlyConnectedDevice != null) {
-                        //you could try to reconnect here
-                        currentlyConnectedDevice = null;
-                    }
-
-                    break;
-
-                case bluetherm_ProbeShuttingDown:
-                    currentlyConnectedDevice = null;
-                    this.sendEmptyMessage(UPDATE_UI);
-                    isConnected = false;
-                    Utils.isProbeConnected = false;
-                    break;
-
-                case bluetherm_NewReading:
-                    if (isConnected) {
-                        errorConnecting = false;
-                        connectFailCount = 1;
-                        Bundle b = msg.getData();
-                        try {
-                            b.setClassLoader(bluethermReport.class.getClassLoader());
-                            lastReading = (bluethermReport)b.getParcelable(null);
-                        } catch (Exception e) {
-                            printb(e.getMessage());
-                            e.printStackTrace();
-                        }
-                    }
-                    this.sendEmptyMessage(UPDATE_UI);
-                    break;
-
-                case bluetherm_EmissivityValue:
-                    Bundle b = msg.getData();
-                    try {
-                        b.setClassLoader(bluethermReport.class.getClassLoader());
-                        lastReading = (bluethermReport) b.getParcelable(null);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    String emissivityValue = lastReading.emissivityValue;
-                    printb("EmisValue "+emissivityValue);
-
-                    break;
-
-                case bluetherm_ErrorConnecting:
-                    changeBluetoothIcon(R.drawable.ic_bluetooth_disabled_white_48dp);
-                    if (Utils.checkNotNull(currentlyConnectedDevice)){
-                        showMessage(getString(R.string.error_connecting_to_device)+" "+currentlyConnectedDevice.getName());
-                    }
-                    printb("bluetherm_ErrorConnecting");
-                    isConnected = false;
-                    Utils.isProbeConnected = false;
-                    imh.sendEmptyMessage(bluetherm_ConnectFailed);
-                    break;
-
-                case bluetherm_ProbeButtonPressed:
-                    printb("Button pressed");
-                    ((TaskDetailsTemperatureAdapter) mAdapter).resetFocus();
-                    break;
-
-                case UPDATE_UI:
-                    printb("updateUI");
-                    if(mBound){
-                        if (isConnected){
-                            printb("isConnected");
-                            if (Utils.checkNotNull(lastReading)){
-
-                                DecimalFormat df = new DecimalFormat("#.#");
-                                double r1 = lastReading.Input1Reading + lastReading.Input1Trim;
-                                updateFields(df.format(r1));
-
-                                if (lastReading.isTwoInput){
-                                    double r2 = lastReading.Input2Reading + lastReading.Input2Trim;
-                                    updateFields(df.format(r2));
-
-                                }
-                            }
-
-                        }
-
-                    }
-                    break;
-            }
-        }
-    }
-    private IncomingMessageHandler imh;
-    private ServiceConnection mConnection = new ServiceConnection() {
+    private ServiceConnection probeServiceConnection = new ServiceConnection() {
 
         public void onServiceConnected(ComponentName className, IBinder service) {
             // This is called when the connection with the service has been
@@ -244,17 +105,16 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
             }
 
             mBound = true;
-            mConnection = this;
-            imh.sendEmptyMessage(UPDATE_UI);
+            probeServiceConnection = this;
+            probeMessageHandler.sendEmptyMessage(UPDATE_UI);
         }
-
 
         public void onServiceDisconnected(ComponentName className) {
             // This is called when the connection with the service has been
             // unexpectedly disconnected -- that is, its process crashed.
             mService = null;
             mBound = false;
-            imh.sendEmptyMessage(UPDATE_UI);
+            probeMessageHandler.sendEmptyMessage(UPDATE_UI);
         }
     };
 
@@ -272,12 +132,8 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
                     connect();
                 }
             }, connectButtonDelay);
-
         }
-
     }
-
-    protected MenuItem bluetoothItem;
 
     private void changeBluetoothIcon(int icon){
         if (Utils.checkNotNull(bluetoothItem)){
@@ -293,6 +149,7 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
         bluetoothItem.setVisible(true);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -312,8 +169,6 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -332,41 +187,36 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
     }
 
     public void doBindService() {
-        imh = new IncomingMessageHandler();
-        mMessenger = new Messenger(imh);
-
-//        Intent i = new Intent();
-//        i.setClassName("uk.co.etiltd.bluetooth.service","uk.co.etiltd.bluetooth.service.bluetherm");
-//        startService(i);
+        probeMessageHandler = new IncomingMessageHandler();
+        mMessenger = new Messenger(probeMessageHandler);
 
         startService(new Intent(this, bluetherm.class));
         try {
             printb("try bind");
-            Context c = getApplicationContext();
+            Context context = getApplicationContext();
 
-//            c.bindService(i, mConnection, Context.BIND_AUTO_CREATE);
-            c.bindService(new Intent(this, bluetherm.class), mConnection, Context.BIND_AUTO_CREATE);
+            context.bindService(new Intent(this, bluetherm.class), probeServiceConnection, Context.BIND_AUTO_CREATE);
 
         }catch(Exception e){
             printb("try bind failed "+e.getMessage());
         }
     }
+
     public void doUnbindService() {
         Intent i = new Intent();
         i.setClassName("uk.co.etiltd.bluetooth.service","uk.co.etiltd.bluetooth.service.bluetherm");
         stopService(i);
         try {
             printb("try unbind");
-            Context c = getApplicationContext();
-            c.unbindService(mConnection);
+            Context context = getApplicationContext();
+            context.unbindService(probeServiceConnection);
         }
         catch(Exception e){
             printb("unbind failed "+e.getMessage());
         }
     }
 
-    public void connect()
-    {
+    public void connect() {
         Set<BluetoothDevice> sod = BluetoothAdapter.getDefaultAdapter().getBondedDevices();
         Iterator<BluetoothDevice> i = sod.iterator();
         while (i.hasNext())
@@ -440,5 +290,150 @@ public class TaskDetailsTemperatureActivity extends TaskDetailsActivity {
 
     private void printb(String message){
         Log.d("mlue800th",message);
+    }
+
+    class IncomingMessageHandler extends Handler {
+
+        private Handler formHandler;
+
+        public void UpdateHandler(Handler value) {
+
+            formHandler = value;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+
+            switch (msg.what) {
+                case 0xF0:
+                    connect();
+                    break;
+
+                case 0xF1:
+                    disConnect();
+                    break;
+
+                case 0xF3:
+                    doBindService();
+                    break;
+
+                case 0xF4:
+                    doUnbindService();
+                    break;
+
+                case bluetherm_ConnectedToProbe:
+                    printb("bluetherm_ConnectedToProbe");
+                    this.sendEmptyMessage(UPDATE_UI);
+                    changeBluetoothIcon(R.drawable.ic_bluetooth_connected_white_48dp);
+                    isConnected = true;
+                    Utils.isProbeConnected = true;
+                    break;
+
+                case bluetherm_ConnectFailed:
+                    this.sendEmptyMessage(UPDATE_UI);
+                    showMessage(getString(R.string.bluetooth_connection_issue));
+                    changeBluetoothIcon(R.drawable.ic_bluetooth_disabled_white_48dp);
+                    isConnected = false;
+                    Utils.isProbeConnected = false;
+                    break;
+
+                case bluetherm_disconnected:
+                    printb("bluetherm_disconnected");
+                    connectButtonDelay = 5000;
+                    isConnected = false;
+                    Utils.isProbeConnected = false;
+                    this.sendEmptyMessage(UPDATE_UI);
+                    changeBluetoothIcon(R.drawable.ic_bluetooth_disabled_white_48dp);
+
+                    lastReading = bluethermReport.getEmptyReading();
+
+                    if (null != formHandler) {
+                        formHandler.sendEmptyMessage(0xF000);
+                    }
+                    if (currentlyConnectedDevice != null) {
+                        //you could try to reconnect here
+                        currentlyConnectedDevice = null;
+                    }
+
+                    break;
+
+                case bluetherm_ProbeShuttingDown:
+                    currentlyConnectedDevice = null;
+                    this.sendEmptyMessage(UPDATE_UI);
+                    isConnected = false;
+                    Utils.isProbeConnected = false;
+                    break;
+
+                case bluetherm_NewReading:
+                    if (isConnected) {
+                        errorConnecting = false;
+                        connectFailCount = 1;
+                        Bundle b = msg.getData();
+                        try {
+                            b.setClassLoader(bluethermReport.class.getClassLoader());
+                            lastReading = b.getParcelable(null);
+                        } catch (Exception e) {
+                            printb(e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                    this.sendEmptyMessage(UPDATE_UI);
+                    break;
+
+                case bluetherm_EmissivityValue:
+                    Bundle b = msg.getData();
+                    try {
+                        b.setClassLoader(bluethermReport.class.getClassLoader());
+                        lastReading = b.getParcelable(null);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    String emissivityValue = lastReading.emissivityValue;
+                    printb("EmisValue " + emissivityValue);
+
+                    break;
+
+                case bluetherm_ErrorConnecting:
+                    changeBluetoothIcon(R.drawable.ic_bluetooth_disabled_white_48dp);
+                    if (Utils.checkNotNull(currentlyConnectedDevice)) {
+                        showMessage(getString(R.string.error_connecting_to_device) + " " + currentlyConnectedDevice.getName());
+                    }
+                    printb("bluetherm_ErrorConnecting");
+                    isConnected = false;
+                    Utils.isProbeConnected = false;
+                    this.sendEmptyMessage(bluetherm_ConnectFailed);
+                    break;
+
+                case bluetherm_ProbeButtonPressed:
+                    printb("Button pressed");
+                    //this should raise an event or at least use a callback
+                    ((TaskDetailsTemperatureAdapter) mAdapter).resetFocus();
+                    break;
+
+                case UPDATE_UI:
+                    printb("updateUI");
+                    if (mBound) {
+                        if (isConnected) {
+                            printb("isConnected");
+                            if (Utils.checkNotNull(lastReading)) {
+
+                                DecimalFormat df = new DecimalFormat("#.#");
+                                double r1 = lastReading.Input1Reading + lastReading.Input1Trim;
+                                updateFields(df.format(r1));
+
+                                if (lastReading.isTwoInput) {
+                                    double r2 = lastReading.Input2Reading + lastReading.Input2Trim;
+                                    updateFields(df.format(r2));
+
+                                }
+                            }
+
+                        }
+
+                    }
+                    break;
+            }
+        }
     }
 }

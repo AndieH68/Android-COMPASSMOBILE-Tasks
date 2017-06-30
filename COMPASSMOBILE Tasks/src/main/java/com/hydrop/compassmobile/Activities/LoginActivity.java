@@ -4,9 +4,12 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hydrop.compassmobile.InitialSetupHandler;
@@ -24,7 +27,10 @@ import com.hydrop.compassmobile.WebAPI.WebAPI;
 
 import io.realm.Realm;
 
+import static com.hydrop.compassmobile.Utils.VersionNumber;
+
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+    private TextView versonValueView;
     private Button loginButton;
     private EditText username,password,serverName;
     private LoginRequest loginRequest;
@@ -38,11 +44,29 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         realm = Realm.getDefaultInstance();
+        versonValueView = (TextView) findViewById(R.id.versionValue);
         loginButton = (Button)findViewById(R.id.loginButton);
         loginButton.setOnClickListener(this);
         username = (EditText)findViewById(R.id.username);
         password = (EditText)findViewById(R.id.password);
         serverName = (EditText)findViewById(R.id.serverName);
+
+        serverName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                WriteServerName(s.toString());
+            }
+        });
 
         serverName.setText(SharedPrefs.getServerName(this));
         username.setText(SharedPrefs.getUserName(this));
@@ -51,6 +75,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             username.setText("hydropTest");
             password.setText("test");
         }
+
+        //set the version number
+        versonValueView.setText(Utils.VersionNumber(this));
     }
 
     @Override
@@ -115,7 +142,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void login(){
         showProgressDialog();
         String servername = serverName.getText().toString();
-        WebAPI.endPoint = "http://"+servername+WebAPI.halfEndPoint;
+        String protocol = Utils.isDebugEnabled ? Utils.httpProtocol : Utils.httpsProtocol;
+        WebAPI.endPoint = protocol + servername + WebAPI.halfEndPoint;
 
         if (SharedPrefs.getServerName(this) != null && !SharedPrefs.getServerName(this).equals(servername)) {
             //reset the synchronisation dates
@@ -163,12 +191,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
 
-
-    private void proceed(){
-        Intent intent = new Intent(getApplicationContext(),TaskActivity.class);
+    private void proceed() {
+        Intent intent = new Intent(getApplicationContext(), TaskActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
+    }
 
+    private void WriteServerName(String serverName) {
+        SharedPrefs.setServerName(serverName, this);
     }
 }

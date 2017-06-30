@@ -1,5 +1,9 @@
 package com.hydrop.compassmobile;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.Context;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -10,8 +14,10 @@ import java.util.TimeZone;
  * Created by Panos on 06/05/16.
  */
 public class Utils {
-    public static boolean isDebugEnabled = false;
-    public static Boolean isProbeConnected = false;
+    public static boolean isDebugEnabled = true;
+    public static boolean isProbeConnected = false;
+    public static String httpProtocol = "http://";
+    public static String httpsProtocol = "https://";
 
     public  static <T> boolean checkNotNull(T object) {
         return object != null;
@@ -180,7 +186,18 @@ public class Utils {
 
     }
 
+    public static String VersionNumber(Context context) {
+        PackageManager manager = context.getPackageManager();
+        try {
+            PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
 
+            return info.versionName;
+
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 
 
 

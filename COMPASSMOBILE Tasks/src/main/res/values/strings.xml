@@ -86,5 +86,16 @@
     <string name="error_connecting_to_device">Error connecting to device</string>
     <string name="exit_current_task">Are you sure you want to exit the current task?</string>
     <string name="incorrect_credentials">Incorrect credentials</string>
+    <string name="preferences">Preferences</string>
+    <string name="record_task_timings">Record Times for each Task</string>
+    <string name="record_temperature_profiles">Record Temperature Profiles</string>
+    <string name="version">Version</string>
+    <string name="support_options">Support Options</string>
+    <string name="helpdeskLabel">helpdesk:</string>
+    <string name="emailLabel">email:</string>
+    <string name="phoneLabel">phone:</string>
+    <string name="helpdeskValue">hydropsupport.freshdesk.com</string>
+    <string name="emailValue">IT-Support@Hydrop.com</string>
+    <string name="phoneValue">+44 (0)121 354 2030</string>
 
 </resources>

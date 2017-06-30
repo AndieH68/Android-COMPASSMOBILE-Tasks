@@ -6,122 +6,235 @@
     android:orientation="vertical"
     tools:context="com.hydrop.compassmobile.Activities.SettingsActivity">
 
-    <TextView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:paddingStart="5dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:background="@color/lightGray"
-        android:text="@string/bluetooth"/>
-    <TextView
-        android:id="@+id/pairing"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:paddingStart="10dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:text="@string/pairing"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:paddingStart="5dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:background="@color/lightGray"
-        android:text="@string/synchronisation"/>
-    <RelativeLayout
-        android:id="@+id/upload_task"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerInParent="true"
-            android:layout_toEndOf="@+id/uploadValue"
-            android:textSize="20sp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:paddingStart="10dp"
-            android:text="@string/upload_task"/>
-        <TextView
-            android:id="@+id/uploadValue"
-            android:layout_alignParentEnd="true"
-            android:layout_centerInParent="true"
-            android:layout_width="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/BluetoothHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/lightGray"
+                android:paddingBottom="10dp"
+                android:paddingStart="5dp"
+                android:paddingTop="10dp"
+                android:text="@string/bluetooth"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/pairing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:paddingStart="10dp"
+                android:paddingTop="10dp"
+                android:text="@string/pairing"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/SynchronisationHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/lightGray"
+                android:paddingBottom="10dp"
+                android:paddingStart="5dp"
+                android:paddingTop="10dp"
+                android:text="@string/synchronisation"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <RelativeLayout
+                android:id="@+id/upload_task"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/uploadTask"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerInParent="true"
+                    android:layout_toEndOf="@+id/uploadValue"
+                    android:paddingBottom="10dp"
+                    android:paddingStart="10dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/upload_task"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/uploadValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerInParent="true"
+                    android:paddingBottom="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="10dp"
+                    android:text="0"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/synchroniseData"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:paddingStart="10dp"
+                android:paddingTop="10dp"
+                android:text="@string/synchronise_data"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/resetSyncDates"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:paddingStart="10dp"
+                android:paddingTop="10dp"
+                android:text="@string/reset_synchronisation_dates"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/resetTaskData"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:paddingStart="10dp"
+                android:paddingTop="10dp"
+                android:text="@string/reset_task_data"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/resetAllData"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:paddingStart="10dp"
+                android:paddingTop="10dp"
+                android:text="@string/reset_all_data"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/PreferencesHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/lightGray"
+                android:paddingBottom="10dp"
+                android:paddingStart="5dp"
+                android:paddingTop="10dp"
+                android:text="@string/preferences"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <RelativeLayout
+                android:id="@+id/record_times"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/recordTimes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10dp"
+                    android:paddingStart="10dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/record_task_timings"
+                    android:textSize="18sp"
+                    tools:textSize="18sp" />
+
+                <Switch
+                    android:id="@+id/recordTimesSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:checked="false" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/record_profile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/recordProfile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10dp"
+                    android:paddingStart="10dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/record_temperature_profiles"
+                    android:textSize="18sp" />
+
+                <Switch
+                    android:id="@+id/recordProfileSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:checked="false" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/HelpHeader"
+                android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:paddingEnd="10dp"
-            android:paddingTop="10dp"
+                android:background="@color/lightGray"
             android:paddingBottom="10dp"
-            android:text="0"/>
+                android:paddingStart="5dp"
+                android:paddingTop="10dp"
+                android:text="@string/help"
+                android:textSize="22sp"
+                android:textStyle="bold" />
 
-    </RelativeLayout>
-    <TextView
-        android:id="@+id/synchroniseData"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="10dp"
-        android:textSize="20sp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:text="@string/synchronise_data"/>
-    <TextView
-        android:id="@+id/resetSyncDates"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="10dp"
-        android:textSize="20sp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:text="@string/reset_synchronisation_dates"/>
-    <TextView
-        android:id="@+id/resetTaskData"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="10dp"
-        android:textSize="20sp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:text="@string/reset_task_data"/>
-    <TextView
-        android:id="@+id/resetAllData"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="10dp"
-        android:textSize="20sp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:text="@string/reset_all_data"/>
+            <TextView
+                android:id="@+id/viewCompassMobileHelp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:paddingStart="10dp"
+                android:paddingTop="10dp"
+                android:text="@string/viewCOMPASSMOBILEHelp"
+                android:textSize="18sp" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:paddingStart="5dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:background="@color/lightGray"
-        android:text="@string/help"
-        android:id="@+id/TextView" />
+            <RelativeLayout
+                android:id="@+id/version"
+                android:layout_width="match_parent"
+                android:layout_height="94dp">
 
-    <TextView
-        android:id="@+id/viewCompassMobileHelp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="10dp"
-        android:textSize="20sp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:text="@string/viewCOMPASSMOBILEHelp" />
+                <TextView
+                    android:id="@+id/versionValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerVertical="false"
+                    android:text="1.0"
+                    android:textSize="18sp"
+                    tools:layout_marginEnd="@dimen/control_Gap" />
+
+                <TextView
+                    android:id="@+id/versionLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginEnd="@dimen/control_Gap"
+                    android:layout_toStartOf="@+id/versionValue"
+                    android:text="@string/version"
+                    android:textSize="18sp" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+    </ScrollView>
 
 
 </LinearLayout>

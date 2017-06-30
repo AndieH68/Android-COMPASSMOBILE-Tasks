@@ -9,25 +9,26 @@ import com.hydrop.compassmobile.WebAPI.Requests.BaseWebRequests;
  * Created by Panos on 27/05/16.
  */
 public class SharedPrefs {
-    public static final String COMMON_SETTINGS = "commonSettings";
-    public static final String BluetoothDevice = "BluetoothName";
-    public static final String ServerName = "ServerName";
-    public static final String UserName = "username";
+    private static final String COMMON_SETTINGS = "commonSettings";
+    private static final String BluetoothDevice = "BluetoothName";
+    private static final String ServerName = "ServerName";
+    private static final String UserName = "username";
+    private static final String UseTaskTiming = "UseTaskTiming";
+    private static final String UseTmperatureProfile = "UseTmperatureProfile";
 
-
-    public static void setBluetoothDeviceName(String name,Context context){
+    public static void setBluetoothDeviceName(String name, Context context) {
         SharedPreferences sharedpreferences = context.getSharedPreferences(BaseWebRequests.operativeId,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString(BluetoothDevice, name);
-        editor.commit();
+        editor.apply();
     }
 
-    public static String  getBluetoothDeviceName(Context context){
+    public static String getBluetoothDeviceName(Context context) {
         SharedPreferences sharedpreferences = context.getSharedPreferences(BaseWebRequests.operativeId,Context.MODE_PRIVATE);
         return sharedpreferences.getString(BluetoothDevice,null);
     }
 
-    public static void setServerName(String name,Context context){
+    public static void setServerName(String name, Context context) {
         SharedPreferences sharedpreferences = context.getSharedPreferences(COMMON_SETTINGS,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString(ServerName, name);
@@ -51,6 +52,28 @@ public class SharedPrefs {
         return sharedpreferences.getString(UserName,null);
     }
 
+    public static void setUseTaskTiming(Boolean useTaskTiming, Context context) {
+        SharedPreferences sharedpreferences = context.getSharedPreferences(COMMON_SETTINGS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putBoolean(UseTaskTiming, useTaskTiming);
+        editor.commit();
+    }
 
+    public static Boolean getUseTaskTiming(Context context) {
+        SharedPreferences sharedpreferences = context.getSharedPreferences(COMMON_SETTINGS, Context.MODE_PRIVATE);
+        return sharedpreferences.getBoolean(UseTaskTiming, false);
+    }
+
+    public static void setUseTmperatureProfile(Boolean useTmperatureProfile, Context context) {
+        SharedPreferences sharedpreferences = context.getSharedPreferences(COMMON_SETTINGS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putBoolean(UseTmperatureProfile, useTmperatureProfile);
+        editor.commit();
+    }
+
+    public static Boolean getUseTmperatureProfile(Context context) {
+        SharedPreferences sharedpreferences = context.getSharedPreferences(COMMON_SETTINGS, Context.MODE_PRIVATE);
+        return sharedpreferences.getBoolean(UseTmperatureProfile, false);
+    }
 
 }

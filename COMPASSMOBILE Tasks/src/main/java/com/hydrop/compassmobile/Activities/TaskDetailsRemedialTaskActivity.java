@@ -73,7 +73,7 @@ public class TaskDetailsRemedialTaskActivity extends TaskDetailsActivity {
             task.setUpdatedLocally(true);
             realm.commitTransaction();
         } else {
-            Log.d("createingParameters", "something went seriously wrong");
+            Log.d("creatingParameters", "something went seriously wrong");
         }
     }
 

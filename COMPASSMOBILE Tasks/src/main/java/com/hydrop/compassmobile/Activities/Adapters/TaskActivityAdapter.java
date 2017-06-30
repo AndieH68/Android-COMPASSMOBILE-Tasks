@@ -19,26 +19,10 @@ import io.realm.RealmResults;
  */
 public class TaskActivityAdapter extends RecyclerView.Adapter<TaskActivityAdapter.MyViewHolder>{
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView taskRef, taskName, location,type,asset,dateDue;
-
-        public MyViewHolder(View view) {
-            super(view);
-            taskRef = (TextView)view.findViewById(R.id.taskRefValue);
-            taskName = (TextView)view.findViewById(R.id.taskNameValue);
-            location =  (TextView)view.findViewById(R.id.locationValue);
-            type = (TextView)view.findViewById(R.id.typeValue);
-            asset = (TextView)view.findViewById(R.id.assetValue);
-            dateDue = (TextView)view.findViewById(R.id.dateValue);
-        }
-    }
-
-
+    public RecyclerViewOnSelectedItem<Task> mRecyclerViewOnSelectedItemListener;
     private RealmResults<Task> taskList;
     private Realm realm;
     private boolean extraPropertyInfoEnabled;
-    public RecyclerViewOnSelectedItem<Task> mRecyclerViewOnSelectedItemListener;
-
     public TaskActivityAdapter( RealmResults<Task> taskList,Realm realm,boolean extraPropertyInfoEnabled,RecyclerViewOnSelectedItem<Task> mRecyclerViewOnSelectedItemListener){
         this.taskList = taskList;
         this.realm = realm;
@@ -64,6 +48,7 @@ public class TaskActivityAdapter extends RecyclerView.Adapter<TaskActivityAdapte
         String taskFullName = FilterHelper.getTaskFullNameForKey(realm,task.getTaskName(),"PPMTaskType","PPMAssetGroup",task.getPpmGroup());
         String assetGroupName = FilterHelper.getAssetGroupNameForKey(realm,task.getPpmGroup(),"PPMAssetGroup");
         String assetTypeName = FilterHelper.getAssetTypeNameForKey(realm,task.getAssetType());
+        String assetNumber = task.getAssetNumber();
         holder.taskRef.setText(task.getTaskRef());
         holder.taskName.setText(taskFullName);
         if (extraPropertyInfoEnabled){
@@ -72,8 +57,8 @@ public class TaskActivityAdapter extends RecyclerView.Adapter<TaskActivityAdapte
             holder.location.setText(task.getLocationName());
 
         }
-        holder.type.setText(assetGroupName);
-        holder.asset.setText(assetTypeName);
+        holder.type.setText(assetGroupName + " - " + assetTypeName);
+        holder.asset.setText(assetNumber);
         holder.dateDue.setText(Utils.dateToString(task.getScheduledDate()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -82,5 +67,19 @@ public class TaskActivityAdapter extends RecyclerView.Adapter<TaskActivityAdapte
             }
         });
 
+    }
+
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
+        public TextView taskRef, taskName, location, type, asset, dateDue;
+
+        public MyViewHolder(View view) {
+            super(view);
+            taskRef = (TextView) view.findViewById(R.id.taskRefValue);
+            taskName = (TextView) view.findViewById(R.id.taskNameValue);
+            location = (TextView) view.findViewById(R.id.locationValue);
+            type = (TextView) view.findViewById(R.id.typeValue);
+            asset = (TextView) view.findViewById(R.id.assetValue);
+            dateDue = (TextView) view.findViewById(R.id.dateValue);
+        }
     }
 }
